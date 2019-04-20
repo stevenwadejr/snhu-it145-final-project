@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Auth {
-    private static String credentialsPath = "credentials.txt";
+    private static final int MAX_LOGIN_ATTEMPTS = 3;
+
+    private static final String CREDENTIALS_FILE = "credentials.txt";
 
     private User user;
 
@@ -13,7 +15,7 @@ public class Auth {
     private int maxLoginAttempts = 3;
 
     public void login(String username, String password) throws Exception {
-        FileInputStream stream = new FileInputStream(Auth.credentialsPath);
+        FileInputStream stream = new FileInputStream(CREDENTIALS_FILE);
         Scanner scnr = new Scanner(stream);
         boolean userFound = false;
         String passwordHash = this.hash(password);
@@ -31,7 +33,7 @@ public class Auth {
 
         stream.close();
 
-        if (++this.loginAttempts >= this.maxLoginAttempts) {
+        if (++this.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
             throw new Exception("Too many failed login attempts");
         }
     }
