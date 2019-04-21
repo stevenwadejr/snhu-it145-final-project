@@ -23,6 +23,7 @@ public class CredentialsFileRepository implements AuthRepository {
     public String[] findUserRecord(String username, String passwordHash) throws Exception {
         // Use a try with resources here to open a stream to a file.
         // This will auto-close the file when the block is finished executing.
+        // see: https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         try (FileInputStream stream = new FileInputStream(CREDENTIALS_FILE)) {
             Scanner scnr = new Scanner(stream);
 

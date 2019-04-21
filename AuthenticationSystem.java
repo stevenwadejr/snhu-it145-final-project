@@ -208,6 +208,7 @@ public class AuthenticationSystem {
 
         // Use a try with resources here to open a stream to a file.
         // This will auto-close the file when the block is finished executing.
+        // see: https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
         try (FileInputStream stream = new FileInputStream(roleFile)) {
             Scanner scnr = new Scanner(stream);
 
