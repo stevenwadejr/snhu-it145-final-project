@@ -12,20 +12,18 @@ public class Auth {
 
     private int loginAttempts = 0;
 
-    private int maxLoginAttempts = 3;
-
     public void login(String username, String password) throws Exception {
         FileInputStream stream = new FileInputStream(CREDENTIALS_FILE);
         Scanner scnr = new Scanner(stream);
         boolean userFound = false;
-        String passwordHash = this.hash(password);
+        String passwordHash = hash(password);
 
         while (scnr.hasNextLine()) {
             String[] row = scnr.nextLine().split("\\t");
 
             if (row[0].equals(username) && row[1].equals(passwordHash)) {
 
-                this.user = new User(row[0], row[1], row[3]);
+                user = new User(row[0], row[1], row[3]);
                 stream.close();
                 return;
             }
@@ -33,18 +31,18 @@ public class Auth {
 
         stream.close();
 
-        if (++this.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        if (++loginAttempts >= MAX_LOGIN_ATTEMPTS) {
             throw new Exception("Too many failed login attempts");
         }
     }
 
     public void logout() {
-        this.loginAttempts = 0;
-        this.user = null;
+        loginAttempts = 0;
+        user = null;
     }
 
     public boolean isLoggedIn() {
-        return this.user instanceof User;
+        return user instanceof User;
     }
 
     public User getUser() {
