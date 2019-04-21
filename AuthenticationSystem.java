@@ -52,7 +52,7 @@ public class AuthenticationSystem {
     public static void main(String[] args) {
         Console cons = System.console();
         boolean shouldQuit = false;
-        AuthenticationSystem.auth = new Auth();
+        AuthenticationSystem.auth = new Auth(new CredentialsFileRepository());
 
         while (shouldQuit == false) {
             MenuOption selectedOption = getSelectedMenuOption();

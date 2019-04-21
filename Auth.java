@@ -1,32 +1,28 @@
 import java.security.MessageDigest;
-import java.util.Scanner;
-import java.io.FileInputStream;
+//import java.util.Scanner;
+//import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Auth {
     private static final int MAX_LOGIN_ATTEMPTS = 3;
 
-    private static final String CREDENTIALS_FILE = "credentials.txt";
+//    private static final String CREDENTIALS_FILE = "credentials.txt";
 
     private User user;
 
     private int loginAttempts = 0;
 
+    private AuthRepository repository;
+
+    public Auth(AuthRepository repository) {
+        this.repository = repository;
+    }
+
     public void login(String username, String password) throws Exception {
-        String passwordHash = hash(password);
+        String[] record = repository.findUserRecord(username, hash(password));
 
-        try (FileInputStream stream = new FileInputStream(CREDENTIALS_FILE)) {
-            Scanner scnr = new Scanner(stream);
-
-            while (scnr.hasNextLine()) {
-                String[] row = scnr.nextLine().split("\\t");
-
-                if (row[0].equals(username) && row[1].equals(passwordHash)) {
-
-                    user = new User(row[0], row[1], row[3]);
-                    return;
-                }
-            }
+        if (record.length > 0) {
+            user = new User(record[0], record[1], record[2]);
         }
 
         if (++loginAttempts >= MAX_LOGIN_ATTEMPTS) {
