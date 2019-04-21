@@ -2,13 +2,50 @@ import java.util.Scanner;
 import java.io.Console;
 import java.io.FileInputStream;
 import java.io.File;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AuthenticationSystem {
-    private static final char OPTION_LOGIN = '1';
 
-    private static final char OPTION_LOGOUT = '2';
+    private static enum MenuOption {
+        LOGIN("Login", '1'),
+        LOGOUT("Logout", '2'),
+        QUIT("Quit", 'q');
 
-    private static final char OPTION_QUIT = 'q';
+        public final String label;
+        public final char selector;
+
+        private static final Map<Character, MenuOption> BY_SELECTOR = new HashMap<>();
+
+        static {
+            for (MenuOption o: values()) {
+                BY_SELECTOR.put(o.selector, o);
+            }
+        }
+
+        private MenuOption(String label, char selector) {
+            this.label = label;
+            this.selector = selector;
+        }
+
+        public String option() {
+            return this.selector + ": " + this.label;
+        }
+
+        public static MenuOption[] authenticatedOptions() {
+            MenuOption[] options = {LOGOUT, QUIT};
+            return options;
+        }
+
+        public static MenuOption[] unauthenticatedOptions() {
+            MenuOption[] options = {LOGIN, QUIT};
+            return options;
+        }
+
+        public static MenuOption valueOfSelector(char selector) {
+            return BY_SELECTOR.get(selector);
+        }
+    }
 
     private static Auth auth;
 
@@ -18,10 +55,10 @@ public class AuthenticationSystem {
         AuthenticationSystem.auth = new Auth();
 
         while (shouldQuit == false) {
-            char selectedOption = showMenu();
+            MenuOption selectedOption = getSelectedMenuOption();
 
             switch (selectedOption) {
-                case AuthenticationSystem.OPTION_LOGIN:
+                case LOGIN:
                     clearScreen();
 
                     try {
@@ -44,54 +81,54 @@ public class AuthenticationSystem {
                         shouldQuit = true;
                     }
                     break;
-                case AuthenticationSystem.OPTION_LOGOUT:
+                case LOGOUT:
                     clearScreen();
                     auth.logout();
                     break;
-                case AuthenticationSystem.OPTION_QUIT:
+                case QUIT:
                     shouldQuit = true;
                     break;
             }
         }
     }
 
-    private static char showMenu() {
+    private static MenuOption getSelectedMenuOption() {
         Scanner scnr = new Scanner(System.in);
-        boolean validOption = false;
-        char selectedOption = AuthenticationSystem.OPTION_QUIT;
+        MenuOption selectedOption = null;
 
-        while (validOption == false) {
-            System.out.println("");
+        while (selectedOption == null) {
+            char selection;
 
-            if (AuthenticationSystem.auth.isLoggedIn() == false) {
-                System.out.println(AuthenticationSystem.OPTION_LOGIN + ": Login");
-            } else {
-                System.out.println(AuthenticationSystem.OPTION_LOGOUT + ": Logout");
-            }
-            System.out.println(AuthenticationSystem.OPTION_QUIT + ": Quit");
-            System.out.println("");
-            System.out.print("Choose an option: ");
+            showMenu();
 
-            selectedOption = scnr.next().charAt(0);
+            selection = scnr.next().charAt(0);
+            selectedOption = MenuOption.valueOfSelector(selection);
 
-            switch (selectedOption) {
-                case AuthenticationSystem.OPTION_LOGIN:
-                case AuthenticationSystem.OPTION_LOGOUT:
-                case AuthenticationSystem.OPTION_QUIT:
-                    validOption = true;
-                    break;
-                default:
-                    System.out.println(
-                            String.format(
-                                    "\nOption \"%s\" was not a valid selection.",
-                                    selectedOption
-                            )
-                    );
-                    break;
+            if (selectedOption == null) {
+                System.out.println(
+                        String.format(
+                                "\nOption \"%s\" was not a valid selection.",
+                                selection
+                        )
+                );
             }
         }
 
         return selectedOption;
+    }
+
+    private static void showMenu() {
+        MenuOption[] options = auth.isLoggedIn()
+                ? MenuOption.authenticatedOptions()
+                : MenuOption.unauthenticatedOptions();
+
+        System.out.println("");
+
+        for (MenuOption o: options) {
+            System.out.println(o.option());
+        }
+
+        System.out.print("Choose an option: ");
     }
 
     private static void clearScreen() {
