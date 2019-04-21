@@ -6,6 +6,14 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Authentication System
+ *
+ * This program allows a Zoo employee to log in and will display
+ * the appropriate information file based on the role of the user.
+ *
+ * @author Steven Wade
+ */
 public class AuthenticationSystem {
 
     private static enum MenuOption {
@@ -78,6 +86,12 @@ public class AuthenticationSystem {
         }
     }
 
+    /**
+     * Prompts the user to select an option from menu. Will continue
+     * to prompt the user until a valid selection is made.
+     *
+     * @return a selected CLI menu option
+     */
     private static MenuOption getSelectedMenuOption() {
         Scanner scnr = new Scanner(System.in);
         MenuOption selectedOption = null;
@@ -103,6 +117,11 @@ public class AuthenticationSystem {
         return selectedOption;
     }
 
+    /**
+     * Outputs a list of menu items to the screen with a
+     * "selector: Label" format. The options display differ
+     * based on whether the user is logged in already or not.
+     */
     private static void showMenu() {
         MenuOption[] options = auth.isLoggedIn()
                 ? MenuOption.authenticatedOptions()
@@ -117,11 +136,20 @@ public class AuthenticationSystem {
         out.print("Choose an option: ");
     }
 
+    /**
+     * Clears the screen of all input.
+     */
     private static void clearScreen() {
         out.print("\033[H\033[2J");
         out.flush();
     }
 
+    /**
+     * Shows the role information for a user based on their role.
+     *
+     * @param user a user to display the appropriate role information for.
+     * @throws Exception
+     */
     private static void showRoleInfo(User user) throws Exception {
         String roleFile = "roles/" + user.getRole() + ".txt";
 
@@ -138,6 +166,13 @@ public class AuthenticationSystem {
         }
     }
 
+    /**
+     * Attempts to log in the user, giving them a few chances to authenticate.
+     * Upon authentication, information specific to the role of the
+     * authenticated user will be displayed.
+     *
+     * @throws Exception
+     */
     private static void doLogin() throws Exception {
         Console cons = System.console();
 

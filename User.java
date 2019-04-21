@@ -1,3 +1,9 @@
+/**
+ * DTO representing a user. Contains their username,
+ * a hashed password, and their role.
+ *
+ * @author Steven Wade
+ */
 public class User {
     private String username;
 
