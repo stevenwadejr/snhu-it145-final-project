@@ -15,7 +15,7 @@ public class CredentialsFileRepository implements AuthRepository {
      * Find the record of a user matching a given username
      * and password (hash) in a credentials text file.
      *
-     * @param username the username of the user to look up.
+     * @param username     the username of the user to look up.
      * @param passwordHash hashed password of the user record.
      * @return a raw user record array consisting of username, passwordHash, and role.
      * @throws Exception

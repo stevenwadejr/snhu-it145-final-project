@@ -27,9 +27,8 @@ public class Auth {
 
     /**
      * Looks up a user record in the data store. If one is found, it
-     * will set an instance of a User on this class.
-     *
-     * Three failed login attempts will trigger an error.
+     * will set an instance of a User on this class. Three failed
+     * login attempts will trigger an error.
      *
      * @param username the username of a user to lookup.
      * @param password the raw text password for a user to hash and lookup.

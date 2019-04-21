@@ -1,4 +1,5 @@
 import static java.lang.System.out;
+
 import java.util.Scanner;
 import java.io.Console;
 import java.io.FileInputStream;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 
 /**
  * Authentication System
- *
+ * <p>
  * This program allows a Zoo employee to log in and will display
  * the appropriate information file based on the role of the user.
  *
@@ -27,7 +28,7 @@ public class AuthenticationSystem {
         private static final Map<Character, MenuOption> BY_SELECTOR = new HashMap<>();
 
         static {
-            for (MenuOption o: values()) {
+            for (MenuOption o : values()) {
                 BY_SELECTOR.put(o.selector, o);
             }
         }
@@ -129,7 +130,7 @@ public class AuthenticationSystem {
 
         out.println("");
 
-        for (MenuOption o: options) {
+        for (MenuOption o : options) {
             out.println(o.option());
         }
 
