@@ -1,12 +1,8 @@
 import java.security.MessageDigest;
-//import java.util.Scanner;
-//import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Auth {
     private static final int MAX_LOGIN_ATTEMPTS = 3;
-
-//    private static final String CREDENTIALS_FILE = "credentials.txt";
 
     private User user;
 
