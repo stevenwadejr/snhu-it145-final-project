@@ -1,3 +1,4 @@
+import static java.lang.System.out;
 import java.util.Scanner;
 import java.io.Console;
 import java.io.FileInputStream;
@@ -29,7 +30,7 @@ public class AuthenticationSystem {
         }
 
         public String option() {
-            return this.selector + ": " + this.label;
+            return selector + ": " + label;
         }
 
         public static MenuOption[] authenticatedOptions() {
@@ -50,34 +51,19 @@ public class AuthenticationSystem {
     private static Auth auth;
 
     public static void main(String[] args) {
-        Console cons = System.console();
         boolean shouldQuit = false;
-        AuthenticationSystem.auth = new Auth(new CredentialsFileRepository());
+        auth = new Auth(new CredentialsFileRepository());
 
         while (shouldQuit == false) {
             MenuOption selectedOption = getSelectedMenuOption();
 
             switch (selectedOption) {
                 case LOGIN:
-                    clearScreen();
-
                     try {
-                        while (auth.isLoggedIn() == false) {
-                            String username = cons.readLine("Username: ");
-                            String password = new String(cons.readPassword("Password: "));
-
-                            auth.login(username, password);
-
-                            if (auth.isLoggedIn() == false) {
-                                System.out.println("Incorrect credentials, please try again");
-                            }
-                        }
-
                         clearScreen();
-                        System.out.println("");
-                        showRoleInfo(auth.getUser());
+                        doLogin();
                     } catch (Exception e) {
-                        System.out.println("Error logging in: \"" + e.getMessage() + "\"");
+                        out.println("Error logging in: \"" + e.getMessage() + "\"");
                         shouldQuit = true;
                     }
                     break;
@@ -105,7 +91,7 @@ public class AuthenticationSystem {
             selectedOption = MenuOption.valueOfSelector(selection);
 
             if (selectedOption == null) {
-                System.out.println(
+                out.println(
                         String.format(
                                 "\nOption \"%s\" was not a valid selection.",
                                 selection
@@ -122,18 +108,18 @@ public class AuthenticationSystem {
                 ? MenuOption.authenticatedOptions()
                 : MenuOption.unauthenticatedOptions();
 
-        System.out.println("");
+        out.println("");
 
         for (MenuOption o: options) {
-            System.out.println(o.option());
+            out.println(o.option());
         }
 
-        System.out.print("Choose an option: ");
+        out.print("Choose an option: ");
     }
 
     private static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        out.print("\033[H\033[2J");
+        out.flush();
     }
 
     private static void showRoleInfo(User user) throws Exception {
@@ -143,12 +129,31 @@ public class AuthenticationSystem {
             Scanner scnr = new Scanner(stream);
 
             while (scnr.hasNextLine()) {
-                System.out.println(scnr.nextLine());
+                out.println(scnr.nextLine());
             }
 
-            System.out.println("");
+            out.println("");
         } catch (FileNotFoundException e) {
             throw new Exception("Cannot read role file: " + user.getRole());
         }
+    }
+
+    private static void doLogin() throws Exception {
+        Console cons = System.console();
+
+        while (auth.isLoggedIn() == false) {
+            String username = cons.readLine("Username: ");
+            String password = new String(cons.readPassword("Password: "));
+
+            auth.login(username, password);
+
+            if (auth.isLoggedIn() == false) {
+                out.println("Incorrect credentials, please try again");
+            }
+        }
+
+        clearScreen();
+        out.println("");
+        showRoleInfo(auth.getUser());
     }
 }
