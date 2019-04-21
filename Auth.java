@@ -13,23 +13,21 @@ public class Auth {
     private int loginAttempts = 0;
 
     public void login(String username, String password) throws Exception {
-        FileInputStream stream = new FileInputStream(CREDENTIALS_FILE);
-        Scanner scnr = new Scanner(stream);
-        boolean userFound = false;
         String passwordHash = hash(password);
 
-        while (scnr.hasNextLine()) {
-            String[] row = scnr.nextLine().split("\\t");
+        try (FileInputStream stream = new FileInputStream(CREDENTIALS_FILE)) {
+            Scanner scnr = new Scanner(stream);
 
-            if (row[0].equals(username) && row[1].equals(passwordHash)) {
+            while (scnr.hasNextLine()) {
+                String[] row = scnr.nextLine().split("\\t");
 
-                user = new User(row[0], row[1], row[3]);
-                stream.close();
-                return;
+                if (row[0].equals(username) && row[1].equals(passwordHash)) {
+
+                    user = new User(row[0], row[1], row[3]);
+                    return;
+                }
             }
         }
-
-        stream.close();
 
         if (++loginAttempts >= MAX_LOGIN_ATTEMPTS) {
             throw new Exception("Too many failed login attempts");
