@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.io.Console;
 import java.io.FileInputStream;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -137,9 +137,9 @@ public class AuthenticationSystem {
     }
 
     private static void showRoleInfo(User user) throws Exception {
-        File roleFile = new File("roles/" + user.getRole() + ".txt");
-        if (roleFile.isFile() && roleFile.canRead()) {
-            FileInputStream stream = new FileInputStream(roleFile);
+        String roleFile = "roles/" + user.getRole() + ".txt";
+
+        try (FileInputStream stream = new FileInputStream(roleFile)) {
             Scanner scnr = new Scanner(stream);
 
             while (scnr.hasNextLine()) {
@@ -147,7 +147,7 @@ public class AuthenticationSystem {
             }
 
             System.out.println("");
-        } else {
+        } catch (FileNotFoundException e) {
             throw new Exception("Cannot read role file: " + user.getRole());
         }
     }
