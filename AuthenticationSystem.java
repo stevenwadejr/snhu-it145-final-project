@@ -86,6 +86,9 @@ public class AuthenticationSystem {
     private static Auth auth;
 
     public static void main(String[] args) {
+        // Start with a clean slate for that "new program" look.
+        clearScreen();
+
         // Instantiate the Auth class with a repository to look up
         // user records from a credentials file.
         auth = new Auth(new CredentialsFileRepository());
@@ -109,10 +112,17 @@ public class AuthenticationSystem {
                     }
                     break;
                 case LOGOUT:
+                    // Always clear the screen on logout as you don't want to leave role
+                    // specific information up on the screen.
                     clearScreen();
+
                     auth.logout();
                     break;
                 case QUIT:
+                    // Always clear the screen on exit as you don't want to leave role
+                    // specific information up on the screen.
+                    clearScreen();
+
                     shouldQuit = true;
                     break;
             }
@@ -166,9 +176,6 @@ public class AuthenticationSystem {
         MenuOption[] options = auth.isLoggedIn()
                 ? MenuOption.authenticatedOptions()
                 : MenuOption.unauthenticatedOptions();
-
-        // Blank line to separate the menu from anything previously printed to the screen.
-        out.println("");
 
         // Loop through each menu option and call its "option()"
         // helper method to display a user friendly prompt.
@@ -242,7 +249,6 @@ public class AuthenticationSystem {
         }
 
         clearScreen();
-        out.println("");
 
         showRoleInfo(auth.getUser());
     }
