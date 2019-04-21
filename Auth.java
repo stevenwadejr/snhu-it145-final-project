@@ -37,10 +37,13 @@ public class Auth {
     public void login(String username, String password) throws Exception {
         String[] record = repository.findUserRecord(username, hash(password));
 
+        // If the repository found a matching user, we'll have a populated array here.
         if (record.length > 0) {
             user = new User(record[0], record[1], record[2]);
         }
 
+        // Increment the login attempts prior to checking. That way we can see earlier
+        // if the user has tried to many times and failed.
         if (++loginAttempts >= MAX_LOGIN_ATTEMPTS) {
             throw new Exception("Too many failed login attempts");
         }

@@ -28,6 +28,8 @@ public class AuthenticationSystem {
         private static final Map<Character, MenuOption> BY_SELECTOR = new HashMap<>();
 
         static {
+            // Populate the BY_SELECTOR hashmap with all MenuOptions
+            // and keyed by their selector.
             for (MenuOption o : values()) {
                 BY_SELECTOR.put(o.selector, o);
             }
@@ -38,20 +40,44 @@ public class AuthenticationSystem {
             this.selector = selector;
         }
 
+        /**
+         * Helper function for formatting the menu option in a
+         * user friendly format with the selector and label.
+         *
+         * @return user friendly string representation of the selector and label.
+         */
         public String option() {
             return selector + ": " + label;
         }
 
+        /**
+         * Get a list of menu options to show when a user is authenticated.
+         * (You wouldn't show "login" when they're already logged in).
+         *
+         * @return array of menu options.
+         */
         public static MenuOption[] authenticatedOptions() {
             MenuOption[] options = {LOGOUT, QUIT};
             return options;
         }
 
+        /**
+         * Get a list of menu options to show when no one is authenticated.
+         * (You wouldn't show "logout" when they're already logged out).
+         *
+         * @return array of menu options.
+         */
         public static MenuOption[] unauthenticatedOptions() {
             MenuOption[] options = {LOGIN, QUIT};
             return options;
         }
 
+        /**
+         * Helper function to find the menu option based on its selector.
+         *
+         * @param selector the character of a menu item to look it up by.
+         * @return a MenuOption if one matching the given selector was found.
+         */
         public static MenuOption valueOfSelector(char selector) {
             return BY_SELECTOR.get(selector);
         }
@@ -60,8 +86,11 @@ public class AuthenticationSystem {
     private static Auth auth;
 
     public static void main(String[] args) {
-        boolean shouldQuit = false;
+        // Instantiate the Auth class with a repository to look up
+        // user records from a credentials file.
         auth = new Auth(new CredentialsFileRepository());
+
+        boolean shouldQuit = false;
 
         while (shouldQuit == false) {
             MenuOption selectedOption = getSelectedMenuOption();
@@ -72,6 +101,9 @@ public class AuthenticationSystem {
                         clearScreen();
                         doLogin();
                     } catch (Exception e) {
+                        // If we hit an error here, let's bail and quit the program.
+                        // Either something went wrong with finding a role file, or
+                        // we took the "user not found" shortcut. Either way, bail.
                         out.println("Error logging in: \"" + e.getMessage() + "\"");
                         shouldQuit = true;
                     }
@@ -100,9 +132,14 @@ public class AuthenticationSystem {
         while (selectedOption == null) {
             char selection;
 
+            // Show the menu to the user until they choose a valid option.
             showMenu();
 
+            // We're matching a MenuItem on a character here, so be sure to grab
+            // the first character entered and set its type.
             selection = scnr.next().charAt(0);
+
+            // Try to match a MenuItem by its selector. If none found, it'll return null.
             selectedOption = MenuOption.valueOfSelector(selection);
 
             if (selectedOption == null) {
@@ -124,21 +161,29 @@ public class AuthenticationSystem {
      * based on whether the user is logged in already or not.
      */
     private static void showMenu() {
+        // Determine which menu options should be shown based
+        // on whether the user is logged in already or not.
         MenuOption[] options = auth.isLoggedIn()
                 ? MenuOption.authenticatedOptions()
                 : MenuOption.unauthenticatedOptions();
 
+        // Blank line to separate the menu from anything previously printed to the screen.
         out.println("");
 
+        // Loop through each menu option and call its "option()"
+        // helper method to display a user friendly prompt.
         for (MenuOption o : options) {
             out.println(o.option());
         }
 
+        // Now prompt the user to select one of the options listed above.
         out.print("Choose an option: ");
     }
 
     /**
      * Clears the screen of all input.
+     *
+     * @see https://stackoverflow.com/a/32295974
      */
     private static void clearScreen() {
         out.print("\033[H\033[2J");
@@ -154,6 +199,8 @@ public class AuthenticationSystem {
     private static void showRoleInfo(User user) throws Exception {
         String roleFile = "roles/" + user.getRole() + ".txt";
 
+        // Use a try with resources here to open a stream to a file.
+        // This will auto-close the file when the block is finished executing.
         try (FileInputStream stream = new FileInputStream(roleFile)) {
             Scanner scnr = new Scanner(stream);
 
@@ -163,6 +210,9 @@ public class AuthenticationSystem {
 
             out.println("");
         } catch (FileNotFoundException e) {
+            // This is the only specific exception we want to catch here. The reason
+            // being is so we can throw a new exception up the chain, with a more
+            // specific/user friendly error message.
             throw new Exception("Cannot read role file: " + user.getRole());
         }
     }
@@ -175,8 +225,11 @@ public class AuthenticationSystem {
      * @throws Exception
      */
     private static void doLogin() throws Exception {
+        // Use a Console here instead of Scanner so we can read and hide the passsword field.
         Console cons = System.console();
 
+        // Keep letting the user try to log in. The Auth class will handle
+        // how many times they can try and fail (hence the "throws" above).
         while (auth.isLoggedIn() == false) {
             String username = cons.readLine("Username: ");
             String password = new String(cons.readPassword("Password: "));
@@ -190,6 +243,7 @@ public class AuthenticationSystem {
 
         clearScreen();
         out.println("");
+
         showRoleInfo(auth.getUser());
     }
 }
