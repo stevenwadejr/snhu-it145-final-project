@@ -1,3 +1,9 @@
+/**
+ * Test the Auth class
+ *
+ * @test
+ * @author Steven Wade
+ */
 public class AuthTest {
 
     public static void main(String[] args) {
@@ -10,6 +16,9 @@ public class AuthTest {
         System.out.println("Testing completed");
     }
 
+    /**
+     * Test that Auth behaves correctly when a user record is not found
+     */
     private static void testUserNotFound() {
         Auth auth = new Auth(getNotFoundFoundRepository());
 
@@ -25,6 +34,9 @@ public class AuthTest {
 
     }
 
+    /**
+     * Test that the Auth class throws an exception when too many failed login attempts hit.
+     */
     private static void testTooManyFailedLoginAttempts() {
         Auth auth = new Auth(getNotFoundFoundRepository());
 
@@ -40,6 +52,9 @@ public class AuthTest {
         }
     }
 
+    /**
+     * Test that when a user record is found, they are logged in and their credentials set.
+     */
     private static void testLoginSucceeds() {
         String givenUsername = "foo";
         String givenPassword = "bar";
@@ -69,6 +84,11 @@ public class AuthTest {
         }
     }
 
+    /**
+     * Mocks an AuthRepository to purposely return an empty record.
+     *
+     * @return a mock repository
+     */
     private static AuthRepository getNotFoundFoundRepository() {
         AuthRepository notFound = new AuthRepository() {
             @Override
